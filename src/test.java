@@ -2,32 +2,26 @@ import java.util.*;
 
 public class test {
 
-    private class ListNode{
-        int val;
-        ListNode next;
-        ListNode(int val){this.val = val;}
-        ListNode(int val,ListNode next){this.val = val; this.next = next;}
+    public String longestPalindrome(String s) {
+        String ans = "";
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        for (int len = 0; len < n; len++) {
+            for (int i = 0; i + len < n; i++){
+                int j = i+len;
+                if (len ==0)
+                    dp[i][j]=true;
+                else if (len ==1)
+                    dp[i][j]=(s.charAt(i)==s.charAt(j));
+                else
+                    dp[i][j]=(s.charAt(i)==s.charAt(j) && dp[i+1][j-1]);
+                if (dp[i][j] && len+1 >ans.length())
+                ans = s.substring(i,j+1);
+            }
+        }
+        return ans;
+
     }
 
-    public ListNode add (ListNode l1,ListNode l2){
-        ListNode head = null , tail = null;
-        int n1,n2,sum,carry=0;
-        while(l1 != null || l2 !=null){
-            n1 = l1 !=null ? l1.val : 0;
-            n2 = l2 !=null ? l1.val : 0;
-            sum =n1+n2+carry;
-            if(head == null)
-                head = tail = new ListNode(sum%10);
-            else{
-                tail = new ListNode(sum%10);
-                tail = tail.next;
-            }
-            carry = sum/10;
-            if (l1 !=null) l1 = l1.next;
-            if (l2 !=null) l2 = l2.next;
-        }
-        if(carry>0) tail.next = new ListNode(carry);
-        return head;
-    }
 
 }

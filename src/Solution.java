@@ -147,7 +147,7 @@ public class Solution {
         return head;
     }
 
-    //4 中位数
+    //4 中位数【mark】
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
         int length1 = nums1.length, length2 = nums2.length;
         int totalLength = length1 + length2;
@@ -202,4 +202,41 @@ public class Solution {
 
         }
     }
+
+
+    //867. 转置矩阵
+    public int[][] transpose(int[][] matrix) {
+        int n = matrix.length;
+        int m = matrix[0].length;
+        int[][] ans = new int[m][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                ans[j][i] = matrix[i][j];
+            }
+        }
+        return ans;
+    }
+
+    //5. 最长回文子串
+    //dp方法,substring的endindex要+1
+    public String longestPalindrome(String s) {
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        String ans = "";
+        for (int len = 0; len < n; len++) {
+            for (int i = 0; i + len < n; i++) {
+                int j = i + len;
+                if (len == 0)
+                    dp[i][j] = true;
+                else if (len == 1)
+                    dp[i][j] = (s.charAt(i) == s.charAt(j));
+                else
+                    dp[i][j] = (s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1]);
+                if (dp[i][j] && len + 1 > ans.length())
+                    ans = s.substring(i, j + 1);
+            }
+        }
+        return ans;
+    }
+
 }
