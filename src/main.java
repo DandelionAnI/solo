@@ -1,8 +1,9 @@
 public class main {
     public static void main(String[] args) {
-//        Solution fss = new Solution();
-//        test fss = new test();
-        int[] ns = new int[]{1,2,5,2,5,2,1,3};
-//        System.out.println(fss.fss(ns));
+        Solution fss = new Solution();
+        //int[] ns = {-1,0,1,2,-1,-4};
+        int ns = 2;
+        System.out.println("yes");
+        System.out.println(fss.climbStairs(ns));
     }
 }

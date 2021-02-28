@@ -1,3 +1,6 @@
+
+
+import javax.swing.tree.TreeNode;
 import java.util.*;
 
 public class Solution {
@@ -237,6 +240,275 @@ public class Solution {
             }
         }
         return ans;
+    }
+
+    //104二叉树最大深度 深度优先、广度优先搜索
+    private class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    public int maxDepth1(TreeNode root) {
+        if (root == null) return 0;
+        else {
+            int leftHeight = maxDepth1(root.left);
+            int rightHeight = maxDepth1(root.right);
+            return Math.max(leftHeight, rightHeight) + 1;
+        }
+    }
+
+    public int maxDepth2(TreeNode root) {
+        if (root == null)
+            return 0;
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.offer(root);
+        int ans = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            while (size > 0) {
+                TreeNode node = queue.poll();
+                if (node.left != null)
+                    queue.offer(node.left);
+                if (node.right != null)
+                    queue.offer(node.right);
+                size--;
+            }
+            ans++;
+        }
+        return ans;
+    }
+
+    //14.最长公共前缀
+    public String longestCommonPrefix(String[] strs) {
+        if (strs == null || strs.length == 0)
+            return "";
+        for (int i = 0; i < strs[0].length(); i++) {
+            char c = strs[0].charAt(i);
+            for (int j = 1; j < strs.length; j++) {
+                if (i == strs[j].length() || (i != 0 && strs[j].charAt(i) != c))
+                    return strs[0].substring(0, i);
+                else if (i == 0 && strs[j].charAt(i) != c)
+                    return "";
+            }
+        }
+        return strs[0];
+    }
+
+
+    //395至少有K个重复字符的最长子串 递归
+    public int longestSubstring(String s, int k) {
+        if (s.length() < k) return 0;
+        Map<Character, Integer> map = new HashMap<Character, Integer>();
+        for (int i = 0; i < s.length(); i++)
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+        for (char c : map.keySet()) {
+            if (map.get(c) < k) {
+                int ans = 0;
+                for (String t : s.split(String.valueOf(c)))
+                    ans = Math.max(ans, longestSubstring(t, k));
+                return ans;
+            }
+        }
+        return s.length();
+    }
+
+    //395至少有K个重复字符的最长子串 分治法
+    public int longestSubstring2(String s, int k) {
+        int n = s.length();
+        return dfs(s, 0, n - 1, k);
+    }
+
+    public int dfs(String s, int l, int r, int k) {
+        int[] cnt = new int[26];
+        for (int i = l; i <= r; i++)
+            cnt[s.charAt(i) - 'a']++;
+
+        char split = 0;
+        for (int i = 0; i < 26; i++) {
+            if (cnt[i] > 0 && cnt[i] < k) {
+                split = (char) (i + 'a');
+                break;
+            }
+        }
+        if (split == 0)
+            return r - l + 1;
+
+        int i = l;
+        int ans = 0;
+        while (i <= r) {
+            while (i <= r && s.charAt(i) == split)
+                i++;
+            if (i > r)
+                break;
+
+            int start = i;
+            while (i <= r && s.charAt(i) != split)
+                i++;
+
+            int length = dfs(s, start, i - 1, k);
+            ans = Math.max(ans, length);
+        }
+        return ans;
+    }
+
+
+    //395至少有K个重复字符的最长子串 滑动窗口
+    public int longestSubstring1(String s, int k) {
+        int ret = 0;
+        int n = s.length();
+        for (int t = 1; t < 27; t++) {
+            int l = 0, r = 0;
+            int[] cnt = new int[26];
+            int tot = 0;
+            int less = 0;
+            while (r < n) {
+                int i = s.charAt(r) - 'a';
+                cnt[i]++;
+                if (cnt[i] == 1) {
+                    tot++;
+                    less++;
+                }
+                if (cnt[i] == k)
+                    less--;
+
+                while (tot > t) {
+                    int j = s.charAt(l) - 'a';
+                    cnt[j]--;
+                    if (cnt[i] == k - 1)
+                        less++;
+
+                    if (cnt[i] == 0) {
+                        tot--;
+                        less--;
+                    }
+                    l++;
+                }
+                if (less == 0)
+                    ret = Math.max(ret, r - l + 1);
+                r++;
+            }
+        }
+        return ret;
+    }
+
+    //896单调数列
+    public boolean isMonotonic(int[] A) {
+        int n = A.length - 1;
+        if (A[0] < A[n]) {
+            for (int i = 0; i < n; i++) {
+                if (A[i] > A[i + 1])
+                    return false;
+            }
+            return true;
+        } else {
+            for (int i = 0; i < n; i++) {
+                if (A[i] < A[i + 1])
+                    return false;
+            }
+            return true;
+        }
+    }
+
+    //11盛最多水的容器 双指针
+    public int maxArea(int[] height) {
+        int left = 0, right = height.length - 1;
+        int ans = 0;
+        while (left < right) {
+            int area = Math.min(height[left], height[right]) * (right - left);
+            ans = Math.max(ans, area);
+            if (height[left] <= height[right])
+                left++;
+            else right--;
+        }
+        return ans;
+    }
+
+    //15 三数之和 双指针
+    public List<List<Integer>> threeSum(int[] nums) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        if (n < 3) return ans;
+        for (int i = 0; i < n; ++i) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            int k = n - 1;
+            int need = -nums[i];
+            for (int j = i + 1; j < n; ++j) {
+                if (j > i + 1 && nums[j] == nums[j - 1]) continue;
+                while (j < k && nums[j] + nums[k] > need) --k;
+                if (j == k) break;
+                if (nums[j] + nums[k] == need) {
+                    List<Integer> adde = new ArrayList<Integer>();
+                    adde.add(nums[i]);
+                    adde.add(nums[j]);
+                    adde.add(nums[k]);
+                    ans.add(adde);
+                }
+            }
+        }
+        return ans;
+    }
+
+    //303 区域和检索-数组不可变
+    private class NumArray {
+        int[] num;
+
+        public NumArray(int[] nums) {
+            num = new int[nums.length + 1];
+            for (int i = 0; i < num.length; ++i)
+                num[i + 1] = num[i] + nums[i];
+        }
+
+        public int sumRange(int i, int j) {
+            return num[j + 1] - num[i];
+        }
+    }
+
+    //20有效的括号
+    public boolean isValid(String s) {
+        int n = s.length();
+        if (n % 2 == 1) return false;
+        Map<Character, Character> pairs = new HashMap<Character, Character>() {{
+            put(')', '(');
+            put(']', '[');
+            put('}', '{');
+        }};
+        Deque<Character> stack = new LinkedList<Character>();
+        for (int i = 0; i < n; ++i) {
+            char ch = s.charAt(i);
+            if (pairs.containsKey(ch)) {
+                if (stack.isEmpty() || stack.peek() != pairs.get(ch))
+                    return false;
+                stack.pop();
+            } else
+                stack.push(ch);
+        }
+        return stack.isEmpty();
+    }
+
+    //70爬楼梯
+    public int climbStairs(int n) {
+        if (n==1 || n==2) return n;
+        int[] dp = new int[n];
+        dp[0] = 1;
+        dp[1] = 2;
+        for (int i = 2; i < n; ++i)
+            dp[i] = dp[i - 2] + dp[i - 1];
+        return dp[n-1];
     }
 
 }
