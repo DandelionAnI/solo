@@ -463,6 +463,8 @@ public class Solution {
         return ans;
     }
 
+
+
     //303 区域和检索-数组不可变
     private class NumArray {
         int[] num;
@@ -642,4 +644,6 @@ public class Solution {
         if (ans == x)return true;
         else return false;
     }
+
+
 }
