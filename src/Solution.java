@@ -511,4 +511,135 @@ public class Solution {
         return dp[n-1];
     }
 
+    //1178. 猜字谜
+    public List<Integer> findNumOfValidWords(String[] words, String[] puzzles) {
+        Map<Integer, Integer> frequency = new HashMap<Integer, Integer>();
+
+        for (String word : words) {
+            int mask = 0;
+            for (int i = 0; i < word.length(); ++i) {
+                char ch = word.charAt(i);
+                mask |= (1 << (ch - 'a'));
+            }
+            if (Integer.bitCount(mask) <= 7) {
+                frequency.put(mask, frequency.getOrDefault(mask, 0) + 1);
+            }
+        }
+
+        List<Integer> ans = new ArrayList<Integer>();
+        for (String puzzle : puzzles) {
+            int total = 0;
+
+            // 枚举子集方法一
+            // for (int choose = 0; choose < (1 << 6); ++choose) {
+            //     int mask = 0;
+            //     for (int i = 0; i < 6; ++i) {
+            //         if ((choose & (1 << i)) != 0) {
+            //             mask |= (1 << (puzzle.charAt(i + 1) - 'a'));
+            //         }
+            //     }
+            //     mask |= (1 << (puzzle.charAt(0) - 'a'));
+            //     if (frequency.containsKey(mask)) {
+            //         total += frequency.get(mask);
+            //     }
+            // }
+
+            // 枚举子集方法二
+            int mask = 0;
+            for (int i = 1; i < 7; ++i) {
+                mask |= (1 << (puzzle.charAt(i) - 'a'));
+            }
+            int subset = mask;
+            do {
+                int s = subset | (1 << (puzzle.charAt(0) - 'a'));
+                if (frequency.containsKey(s)) {
+                    total += frequency.get(s);
+                }
+                subset = (subset - 1) & mask;
+            } while (subset != mask);
+
+            ans.add(total);
+        }
+        return ans;
+    }
+
+
+    //7整数反转
+    public int reverse(int x) {
+        int rev = 0;
+        while (x != 0) {
+            int pop = x % 10;
+            x /= 10;
+            if (rev > Integer.MAX_VALUE / 10 || (rev == Integer.MAX_VALUE / 10 && pop > 7)) return 0;
+            if (rev < Integer.MIN_VALUE / 10 || (rev == Integer.MIN_VALUE / 10 && pop < -8)) return 0;
+            rev = rev * 10 + pop;
+        }
+        return rev;
+    }
+
+    //8字符串转换整数
+    //DFA自动机
+    private class Automaton {
+        public int sign = 1;
+        public long ans = 0;
+        private String state = "start";
+        private Map<String, String[]> table = new HashMap<String, String[]>() {{
+            put("start", new String[]{"start", "signed", "in_number", "end"});
+            put("signed", new String[]{"end", "end", "in_number", "end"});
+            put("in_number", new String[]{"end", "end", "in_number", "end"});
+            put("end", new String[]{"end", "end", "end", "end"});
+        }};
+
+        public void get(char c) {
+            state = table.get(state)[get_col(c)];
+            if ("in_number".equals(state)) {
+                ans = ans * 10 + c - '0';
+
+                ans = sign == 1 ? Math.min(ans, (long) Integer.MAX_VALUE) : Math.min(ans, -(long) Integer.MIN_VALUE);
+            } else if ("signed".equals(state))
+                sign = c == '+' ? 1 : -1;
+        }
+
+
+        private int get_col(char c) {
+            if (c == ' ')
+                return 0;
+            if (c == '+' || c == '-')
+                return 1;
+            if (Character.isDigit(c))
+                return 2;
+            return 3;
+        }
+
+    }
+
+    public int myAtoi(String str) {
+        Automaton automaton = new Automaton();
+        int length = str.length();
+        for (int i = 0; i < length; i++)
+            automaton.get(str.charAt(i));
+        return (int) (automaton.sign * automaton.ans);
+    }
+
+    //9回文数--转字符串
+    public boolean isPalindrome1(int x) {
+        if (x < 0) return false;
+        String s = String.valueOf(x);
+        String ans = new StringBuffer(s).reverse().toString();
+        if (s.equals(ans)) return true;
+        else return false;
+    }
+
+    //9回文数 不转字符串
+    public boolean isPalindrome2(int x) {
+        if (x < 0) return false;
+        int ans = 0;
+        int y =x;
+        while (y != 0) {
+            ans = ans * 10 + y % 10;
+            y = y / 10;
+        }
+        if (ans == x)return true;
+        else return false;
+    }
 }
