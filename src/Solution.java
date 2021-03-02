@@ -650,8 +650,6 @@ public class Solution {
         int n = nums.length;
         int best = 10000000;
         Arrays.sort(nums);
-        System.out.println(Arrays.toString(nums));
-        List<Integer> ans = new ArrayList<>();
         for (int i = 0; i < n; ++i) {
             if (i > 0 && nums[i] == nums[i - 1]) continue;
             int j = i + 1;
@@ -675,4 +673,61 @@ public class Solution {
         }
         return best;
     }
+
+
+    //304二维数组子数组
+    private class NumMatrix {
+
+
+        int[][] sums;
+
+        public NumMatrix(int[][] matrix) {
+            int m = matrix.length;
+            if (m > 0) {
+                int n = matrix[0].length;
+                sums = new int[m + 1][n + 1];
+                for (int i = 0; i < m; i++) {
+                    for (int j = 0; j < n; j++) {
+                        sums[i + 1][j + 1] = sums[i][j + 1] + sums[i + 1][j + 1] - sums[i][j] + matrix[i][j];
+                    }
+                }
+            }
+        }
+
+        public int sumRegion(int row1, int col1, int row2, int col2) {
+            return sums[row2 + 1][col2 + 1] - sums[row1][col2 + 1] - sums[row2 + 1][col1] + sums[row1][col1];
+        }
+    }
+
+    //21合并两个有序链表 递归
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if (l1 == null) return l2;
+        else if (l2 == null) return l1;
+        else if (l1.val < l2.val){
+            l1.next = mergeTwoLists(l1.next,l2);
+            return l1;
+        }else{
+            l2.next = mergeTwoLists(l1,l2.next);
+            return l2;
+        }
+    }
+
+    //21合并两个有序链表 迭代
+    public ListNode mergeTwoLists2(ListNode l1, ListNode l2) {
+        ListNode prehead = new ListNode(-1);
+        ListNode prev = prehead;
+        while(l1!=null && l2!=null){
+            if (l1.val>l2.val){
+                prev.next = l2;
+                l2=l2.next;
+            }else {
+                prev.next = l1;
+                l1 = l1.next;
+            }
+            prev = prev.next;
+        }
+        prev.next = l1 ==null ? l2:l1;
+        return prehead.next;
+    }
+
 }
