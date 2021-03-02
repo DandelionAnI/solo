@@ -437,33 +437,6 @@ public class Solution {
         return ans;
     }
 
-    //15 三数之和 双指针
-    public List<List<Integer>> threeSum(int[] nums) {
-        int n = nums.length;
-        Arrays.sort(nums);
-        List<List<Integer>> ans = new ArrayList<List<Integer>>();
-        if (n < 3) return ans;
-        for (int i = 0; i < n; ++i) {
-            if (i > 0 && nums[i] == nums[i - 1]) continue;
-            int k = n - 1;
-            int need = -nums[i];
-            for (int j = i + 1; j < n; ++j) {
-                if (j > i + 1 && nums[j] == nums[j - 1]) continue;
-                while (j < k && nums[j] + nums[k] > need) --k;
-                if (j == k) break;
-                if (nums[j] + nums[k] == need) {
-                    List<Integer> adde = new ArrayList<Integer>();
-                    adde.add(nums[i]);
-                    adde.add(nums[j]);
-                    adde.add(nums[k]);
-                    ans.add(adde);
-                }
-            }
-        }
-        return ans;
-    }
-
-
 
     //303 区域和检索-数组不可变
     private class NumArray {
@@ -504,13 +477,13 @@ public class Solution {
 
     //70爬楼梯
     public int climbStairs(int n) {
-        if (n==1 || n==2) return n;
+        if (n == 1 || n == 2) return n;
         int[] dp = new int[n];
         dp[0] = 1;
         dp[1] = 2;
         for (int i = 2; i < n; ++i)
             dp[i] = dp[i - 2] + dp[i - 1];
-        return dp[n-1];
+        return dp[n - 1];
     }
 
     //1178. 猜字谜
@@ -636,14 +609,70 @@ public class Solution {
     public boolean isPalindrome2(int x) {
         if (x < 0) return false;
         int ans = 0;
-        int y =x;
+        int y = x;
         while (y != 0) {
             ans = ans * 10 + y % 10;
             y = y / 10;
         }
-        if (ans == x)return true;
+        if (ans == x) return true;
         else return false;
     }
 
 
+    //15 三数之和 双指针
+    public List<List<Integer>> threeSum(int[] nums) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        if (n < 3) return ans;
+        for (int i = 0; i < n; ++i) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            int k = n - 1;
+            int need = -nums[i];
+            for (int j = i + 1; j < n; ++j) {
+                if (j > i + 1 && nums[j] == nums[j - 1]) continue;
+                while (j < k && nums[j] + nums[k] > need) --k;
+                if (j == k) break;
+                if (nums[j] + nums[k] == need) {
+                    List<Integer> adde = new ArrayList<Integer>();
+                    adde.add(nums[i]);
+                    adde.add(nums[j]);
+                    adde.add(nums[k]);
+                    ans.add(adde);
+                }
+            }
+        }
+        return ans;
+    }
+
+    //16三数之和
+    public int threeSumClosest(int[] nums, int target) {
+        int n = nums.length;
+        int best = 10000000;
+        Arrays.sort(nums);
+        System.out.println(Arrays.toString(nums));
+        List<Integer> ans = new ArrayList<>();
+        for (int i = 0; i < n; ++i) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            int j = i + 1;
+            int k = n - 1;
+            int need = target - nums[i];
+            while (j < k) {
+                int sum = nums[i] + nums[j] + nums[k];
+                if (sum == target) return target;
+                if (Math.abs(sum - target) < Math.abs(best - target))
+                    best = sum;
+                if (sum > target) {
+                    int k0 = k - 1;
+                    while (j < k0 && nums[k0] == nums[k]) --k0;
+                    k = k0;
+                } else {
+                    int j0 = j + 1;
+                    while (j0 < k && nums[j0] == nums[j]) ++j0;
+                    j = j0;
+                }
+            }
+        }
+        return best;
+    }
 }
