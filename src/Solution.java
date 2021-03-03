@@ -703,11 +703,11 @@ public class Solution {
     public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
         if (l1 == null) return l2;
         else if (l2 == null) return l1;
-        else if (l1.val < l2.val){
-            l1.next = mergeTwoLists(l1.next,l2);
+        else if (l1.val < l2.val) {
+            l1.next = mergeTwoLists(l1.next, l2);
             return l1;
-        }else{
-            l2.next = mergeTwoLists(l1,l2.next);
+        } else {
+            l2.next = mergeTwoLists(l1, l2.next);
             return l2;
         }
     }
@@ -716,18 +716,31 @@ public class Solution {
     public ListNode mergeTwoLists2(ListNode l1, ListNode l2) {
         ListNode prehead = new ListNode(-1);
         ListNode prev = prehead;
-        while(l1!=null && l2!=null){
-            if (l1.val>l2.val){
+        while (l1 != null && l2 != null) {
+            if (l1.val > l2.val) {
                 prev.next = l2;
-                l2=l2.next;
-            }else {
+                l2 = l2.next;
+            } else {
                 prev.next = l1;
                 l1 = l1.next;
             }
             prev = prev.next;
         }
-        prev.next = l1 ==null ? l2:l1;
+        prev.next = l1 == null ? l2 : l1;
         return prehead.next;
     }
+
+    //338比特位计数
+    public int[] countBits(int num) {
+        int[] bits = new int[num + 1];
+        int highBit = 0;
+        for (int i = 1; i <= num; i++) {
+            if ((i & (i - 1)) == 0)
+                highBit = i;
+            bits[i] = bits[i - highBit] + 1;
+        }
+        return bits;
+    }
+
 
 }
