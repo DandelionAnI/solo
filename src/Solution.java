@@ -1,6 +1,4 @@
 
-
-import javax.swing.tree.TreeNode;
 import java.util.*;
 
 public class Solution {
@@ -740,6 +738,83 @@ public class Solution {
             bits[i] = bits[i - highBit] + 1;
         }
         return bits;
+    }
+
+    //354俄罗斯套娃
+    public int maxEnvelopes(int[][] envelopes) {
+        return 0 ;
+    }
+
+    //232用栈实现队列
+    /**
+     * Your MyQueue object will be instantiated and called as such:
+     * MyQueue obj = new MyQueue();
+     * obj.push(x);
+     * int param_2 = obj.pop();
+     * int param_3 = obj.peek();
+     * boolean param_4 = obj.empty();
+     */
+    private class MyQueue {
+        Deque<Integer> inStack;
+        Deque<Integer> outStack;
+
+        public MyQueue(){
+            inStack = new LinkedList<Integer>();
+            outStack = new LinkedList<Integer>();
+        }
+
+        /** Push element x to the back of queue. */
+        public void push(int x) {
+            inStack.push(x);
+        }
+
+        /** Removes the element from in front of queue and returns that element. */
+        public int pop() {
+            if (outStack.isEmpty())
+                in2out();
+            return  outStack.pop();
+        }
+
+        /** Get the front element. */
+        public int peek() {
+            if (outStack.isEmpty())
+                in2out();
+            return outStack.peek();
+        }
+
+        /** Returns whether the queue is empty. */
+        public boolean empty() {
+                return inStack.isEmpty() && outStack.isEmpty();
+        }
+
+        private void in2out(){
+            while(!inStack.isEmpty())
+                outStack.push(inStack.pop());
+        }
+    }
+
+
+    //206翻转链表 迭代
+    public ListNode reverseList(ListNode head) {
+        ListNode prev = null;
+        ListNode curr = head;
+        while(curr != null){
+            ListNode next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
+
+    //206翻转链表 递归
+    public ListNode reverseList1(ListNode head) {
+        if(head == null || head.next ==null)
+            return head;
+        ListNode newHead = reverseList(head.next);
+        head.next.next = head;
+        head.next = null;
+        return newHead;
     }
 
 
