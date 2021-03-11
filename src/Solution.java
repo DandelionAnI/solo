@@ -742,10 +742,11 @@ public class Solution {
 
     //354俄罗斯套娃
     public int maxEnvelopes(int[][] envelopes) {
-        return 0 ;
+        return 0;
     }
 
     //232用栈实现队列
+
     /**
      * Your MyQueue object will be instantiated and called as such:
      * MyQueue obj = new MyQueue();
@@ -758,37 +759,45 @@ public class Solution {
         Deque<Integer> inStack;
         Deque<Integer> outStack;
 
-        public MyQueue(){
+        public MyQueue() {
             inStack = new LinkedList<Integer>();
             outStack = new LinkedList<Integer>();
         }
 
-        /** Push element x to the back of queue. */
+        /**
+         * Push element x to the back of queue.
+         */
         public void push(int x) {
             inStack.push(x);
         }
 
-        /** Removes the element from in front of queue and returns that element. */
+        /**
+         * Removes the element from in front of queue and returns that element.
+         */
         public int pop() {
             if (outStack.isEmpty())
                 in2out();
-            return  outStack.pop();
+            return outStack.pop();
         }
 
-        /** Get the front element. */
+        /**
+         * Get the front element.
+         */
         public int peek() {
             if (outStack.isEmpty())
                 in2out();
             return outStack.peek();
         }
 
-        /** Returns whether the queue is empty. */
+        /**
+         * Returns whether the queue is empty.
+         */
         public boolean empty() {
-                return inStack.isEmpty() && outStack.isEmpty();
+            return inStack.isEmpty() && outStack.isEmpty();
         }
 
-        private void in2out(){
-            while(!inStack.isEmpty())
+        private void in2out() {
+            while (!inStack.isEmpty())
                 outStack.push(inStack.pop());
         }
     }
@@ -798,7 +807,7 @@ public class Solution {
     public ListNode reverseList(ListNode head) {
         ListNode prev = null;
         ListNode curr = head;
-        while(curr != null){
+        while (curr != null) {
             ListNode next = curr.next;
             curr.next = prev;
             prev = curr;
@@ -809,7 +818,7 @@ public class Solution {
 
     //206翻转链表 递归
     public ListNode reverseList1(ListNode head) {
-        if(head == null || head.next ==null)
+        if (head == null || head.next == null)
             return head;
         ListNode newHead = reverseList(head.next);
         head.next.next = head;
@@ -817,5 +826,230 @@ public class Solution {
         return newHead;
     }
 
+    //1047删除字符串中的所有相邻重复项
+    public String removeDuplicates(String S) {
+        StringBuilder builder = new StringBuilder();
+        int top = -1;
+        for (int i = 0; i < S.length(); ++i) {
+            char ch = S.charAt(i);
+            if (top >= 0 && builder.charAt(top) == ch) {
+                builder.deleteCharAt(top);
+                --top;
+            } else {
+                builder.append(ch);
+                ++top;
+            }
+        }
+        return builder.toString();
+    }
 
+    //225 两个队列实现栈
+    private class MyStack {
+
+        Queue<Integer> queue1;
+        Queue<Integer> queue2;
+
+        /**
+         * Initialize your data structure here.
+         */
+        public MyStack() {
+            queue1 = new LinkedList<>();
+            queue2 = new LinkedList<>();
+        }
+
+        /**
+         * Push element x onto stack.
+         */
+        public void push(int x) {
+            queue2.offer(x);
+            while (!queue1.isEmpty()) queue2.offer(queue1.poll());
+            Queue<Integer> temp = queue1;
+            queue1 = queue2;
+            queue2 = temp;
+        }
+
+        /**
+         * Removes the element on top of the stack and returns that element.
+         */
+        public int pop() {
+            return queue1.poll();
+        }
+
+        /**
+         * Get the top element.
+         */
+        public int top() {
+            return queue1.peek();
+        }
+
+        /**
+         * Returns whether the stack is empty.
+         */
+        public boolean empty() {
+            return queue1.isEmpty();
+        }
+    }
+
+    //225 一个队列实现栈
+    private class MyStack2 {
+
+        Queue<Integer> queue;
+
+        /**
+         * Initialize your data structure here.
+         */
+        public MyStack2() {
+            queue = new LinkedList<>();
+        }
+
+        /**
+         * Push element x onto stack.
+         */
+        public void push(int x) {
+            int n = queue.size();
+            queue.offer(x);
+            for (int i = 0; i < n; i++)
+                queue.offer(queue.poll());
+        }
+
+        /**
+         * Removes the element on top of the stack and returns that element.
+         */
+        public int pop() {
+            return queue.poll();
+        }
+
+        /**
+         * Get the top element.
+         */
+        public int top() {
+            return queue.peek();
+        }
+
+        /**
+         * Returns whether the stack is empty.
+         */
+        public boolean empty() {
+            return queue.isEmpty();
+        }
+    }
+
+    /**
+     * Your MyStack object will be instantiated and called as such:
+     * MyStack obj = new MyStack();
+     * obj.push(x);
+     * int param_2 = obj.pop();
+     * int param_3 = obj.top();
+     * boolean param_4 = obj.empty();
+     */
+
+    //146 LRU缓存机制
+    private class LRUCache {
+
+        class DLinkedNode {
+            int key;
+            int value;
+            DLinkedNode prev;
+            DLinkedNode next;
+
+            public DLinkedNode() {
+            }
+
+            public DLinkedNode(int key, int value) {
+                this.key = key;
+                this.value = value;
+            }
+
+        }
+
+        private Map<Integer, DLinkedNode> cache = new HashMap<>();
+        private int size;
+        private int capacity;
+        private DLinkedNode head, tail;
+
+        public LRUCache(int capacity) {
+            this.size = 0;
+            this.capacity = capacity;
+            //使用伪头部和伪尾部节点
+            head = new DLinkedNode();
+            tail = new DLinkedNode();
+            head.next = tail;
+            tail.prev = head;
+        }
+
+        public int get(int key) {
+            DLinkedNode node = cache.get(key);
+            if (node == null) return -1;
+            //如果key存在，先通过哈希表定位，再移到头部
+            moveToHead(node);
+            return node.value;
+        }
+
+        public void put(int key, int value) {
+            DLinkedNode node = cache.get(key);
+            if (node == null) {
+                DLinkedNode newNode = new DLinkedNode(key, value);
+                cache.put(key, newNode);
+                addToHead(newNode);
+                ++size;
+                if (size > capacity) {
+                    DLinkedNode tail = removeTail();
+                    cache.remove(tail.key);
+                    --size;
+                }
+            } else {
+                node.value = value;
+                moveToHead(node);
+            }
+        }
+
+        private void addToHead(DLinkedNode node) {
+            node.prev = head;
+            node.next = head.next;
+            head.next.prev = node;
+            head.next = node;
+        }
+
+        private void removeNode(DLinkedNode node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+        }
+
+        private void moveToHead(DLinkedNode node) {
+            removeNode(node);
+            addToHead(node);
+        }
+
+        private DLinkedNode removeTail() {
+            DLinkedNode res = tail.prev;
+            removeNode(res);
+            return res;
+        }
+
+    }
+
+    /**
+     * Your LRUCache object will be instantiated and called as such:
+     * LRUCache obj = new LRUCache(capacity);
+     * int param_1 = obj.get(key);
+     * obj.put(key,value);
+     */
+
+    //136 只出现一次的数字
+    public int singleNumber(int[] nums) {
+        int single = 0;
+        for (int num : nums)
+            single ^= num;
+        return single;
+    }
+
+    //53 最大子序和
+    public int maxSubArray(int[] nums) {
+        int pre =0,maxAns = nums[0];
+        for (int x : nums){
+            pre = Math.max(pre+ x,x);
+            maxAns = Math.max(maxAns,pre);
+        }
+
+    }
 }
