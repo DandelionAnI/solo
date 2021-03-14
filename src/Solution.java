@@ -1,4 +1,5 @@
 
+import java.math.BigInteger;
 import java.util.*;
 
 public class Solution {
@@ -802,6 +803,18 @@ public class Solution {
         }
     }
 
+    //26 删除排序数组中的重复项
+    public int removeDuplicates(int[] nums) {
+        int i = 0;
+        int sum = 0;
+        for (int j = 1; j < nums.length; j++) {
+            if (nums[j] != nums[i]) {
+                i++;
+                nums[i] = nums[j];
+            }
+        }
+        return i + 1;
+    }
 
     //206翻转链表 迭代
     public ListNode reverseList(ListNode head) {
@@ -1070,5 +1083,162 @@ public class Solution {
                 return i + 1;
         return n + 1;
     }
+
+    //88 合并两个有序数组 双指针从前往后
+    public void merge1(int[] nums1, int m, int[] nums2, int n) {
+        int[] nums1_copy = new int[m];
+        System.arraycopy(nums1, 0, nums1_copy, 0, m);
+        int p1 = 0, p2 = 0;
+        int p = 0;
+        while (p1 < m && p2 < n)
+            nums1[p++] = (nums1_copy[p1] < nums2[p2]) ? nums1_copy[p1++] : nums2[p2++];
+        if (p1 < m)
+            System.arraycopy(nums1_copy, p1, nums1, p1 + p2, m + n - p1 - p2);
+        if (p2 < n)
+            System.arraycopy(nums2, p2, nums2, p1 + p2, m + n - p1 - p2);
+    }
+
+    //88 合并两个有序数组 双指针从后往前
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+
+        int p1 = m - 1, p2 = n - 1;
+        int p = m + n - 1;
+        while (p1 > 0 && p2 > 0)
+            nums1[p--] = (nums1[p1] > nums2[p2]) ? nums1[p1--] : nums2[p2--];
+
+        System.arraycopy(nums2, 0, nums1, 0, p2 + 1);
+    }
+
+    //160相交链表
+
+    /**
+     * Definition for singly-linked list.
+     * public class ListNode {
+     * int val;
+     * ListNode next;
+     * ListNode(int x) {
+     * val = x;
+     * next = null;
+     * }
+     * }
+     */
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null) return null;
+
+        ListNode p1 = headA;
+        ListNode p2 = headB;
+
+        while (p1 != p2) {
+            p1 = p1 == null ? headB : p1.next;
+            p2 = p2 == null ? headA : p2.next;
+        }
+        return p1;
+    }
+
+    //128最长连续序列
+    public int longestConsecutive(int[] nums) {
+        Set<Integer> num_set = new HashSet<>();
+        for (int num : nums)
+            num_set.add(num);
+        int max = 0;
+        for (int num : num_set) {
+            if (!num_set.contains(num - 1)) {
+                int curnum = num;
+                int curstr = 1;
+
+                while (num_set.contains(curnum + 1)) {
+                    curnum += 1;
+                    curstr += 1;
+                }
+
+                max = Math.max(max, curstr);
+            }
+        }
+        return max;
+    }
+
+
+    //121.买卖股票的最佳时机
+    public int maxProfit(int[] prices) {
+        int minprice = Integer.MAX_VALUE;
+        int maxprofit = 0;
+        for (int i = 0; i < prices.length; ++i) {
+            if (prices[i] < minprice) minprice = prices[i];
+            else if (prices[i] - minprice > maxprofit) maxprofit = prices[i] - minprice;
+        }
+        return maxprofit;
+    }
+
+    //122.买卖股票的最佳时机 2
+    public int maxProfit2(int[] prices) {
+        int ans = 0;
+        for (int i = 0; i < prices.length; ++i)
+            ans += Math.max(0, prices[i] - prices[i - 1]);
+        return ans;
+    }
+
+    //33搜索旋转排序数组
+    public int search(int[] nums, int target) {
+        int n = nums.length;
+        if (n == 0) return -1;
+        if (n == 1) return nums[0] == target ? 0 : -1;
+        int l = 0, r = n - 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            if (nums[mid] == target) return mid;
+            if (nums[0] <= nums[mid]) {
+                if (nums[0] <= target && nums[mid] > target)
+                    r = mid - 1;
+                else
+                    l = mid + 1;
+            } else {
+                if (nums[mid] < target && nums[n - 1] >= target)
+                    l = mid + 1;
+                else
+                    r = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+    //215 数组中的第K个大元素 堆
+
+    public int findKthLargest(int[] nums, int k) {
+        int heapSize = nums.length;
+        buildMaxHeap(nums, heapSize);
+        for (int i = nums.length - 1; i >= nums.length - k + 1; --i) {
+            swap(nums, 0, i);
+            --heapSize;
+            maxHeapify(nums, 0, heapSize);
+        }
+        return nums[0];
+    }
+
+    public void buildMaxHeap(int[] a, int heapSize) {
+        for (int i = heapSize / 2; i >= 0; --i)
+            maxHeapify(a, i, heapSize);
+    }
+
+    public void maxHeapify(int[] a, int i, int heapSize) {
+        int l = i * 2 + 1, r = i * 2 + 2, largest = i;
+        if (l < heapSize && a[l] > a[largest])
+            largest = l;
+        if (r < heapSize && a[r] > a[largest])
+            largest = r;
+        if (largest != i) {
+            swap(a, i, largest);
+            maxHeapify(a, largest, heapSize);
+        }
+    }
+
+    public void swap(int[] a, int i, int j) {
+        int temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+    }
+
+
+
+
 
 }

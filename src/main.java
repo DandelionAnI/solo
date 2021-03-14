@@ -1,16 +1,40 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class main {
     public static void main(String[] args) {
-        Solution fss = new Solution();
-        int[] ns = {-1,2,1,-4};
-        int b = 1;
-
-
-        System.out.println("yes");
-        System.out.println(fss.threeSumClosest(ns,b));
-
+        int[] ns = {3, 2, 1, 5, 2};
+        System.out.println(twiceNumber(ns));
     }
+
+    public static int twiceNumber(int[] nums) {
+        int n = nums.length;
+        //笨办法，建立数组保存出现次数
+        int[] map = new int[n + 1];
+        for (int i = 0; i < n; ++i)
+            map[nums[i]]++;
+        for (int i = 0; i < n; ++i)
+            if (map[nums[i]] == 2)
+                return nums[i];
+        return 0;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
