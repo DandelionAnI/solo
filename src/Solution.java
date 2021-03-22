@@ -1238,7 +1238,689 @@ public class Solution {
     }
 
 
+    //字节一面
+    public static int solution(String s) {
+        if (s == null) return 0;
+        int n = s.length();
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        if (s.charAt(0) == '0')
+            dp[1] = 0;
+        else dp[1] = 1;
 
+        for (int i = 2; i <= n; i++) {
+            int p1 = Integer.valueOf(s.substring(i - 1, i));
+            int p2 = Integer.valueOf(s.substring(i - 2, i));
+            //1-9
+            if (p1 > 0 && p1 <= 9) {
+                dp[i] = dp[i] + dp[i - 1];
+            }
+            //10-26   10/20
+            if (p2 > 9 && p2 < 27) {
+                dp[i] = dp[i] + dp[i - 2];
+            }
+        }
+        return dp[n];
+    }
 
+    //91
+    public int numDecodings(String s) {
+        if (s == null && s.charAt(0) == '0') return 0;
+        int n = s.length();
+        int dp[] = new int[n + 1];
+        dp[0] = 0;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            int one = Integer.valueOf(s.substring(i - 1, i));
+            int two = Integer.valueOf(s.substring(i - 2, i));
+            if (one > 0 && one <= 9)
+                dp[i] = dp[i - 1] + dp[i];
+            if (two > 9 && one <= 26)
+                dp[i] = dp[i - 2] + dp[i];
+        }
+        return dp[n];
+    }
 
+    //1143.最长公共子序列
+    public int longestCommonSubsequence(String text1, String text2) {
+        int n = text1.length(), m = text2.length();
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                char c1 = text1.charAt(i);
+                char c2 = text2.charAt(j);
+                if (c1 == c2)
+                    dp[i + 1][j + 1] = dp[i][j] + 1;
+                else
+                    dp[i + 1][j + 1] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+            }
+        }
+        return dp[n][m];
+    }
+
+    //31下一个排列
+    public void nextPermutation(int[] nums) {
+        int n = nums.length;
+        for (int i = n - 1; i > 0; i--) {
+            if (nums[i] > nums[i - 1]) {
+                Arrays.sort(nums, i, n);
+                for (int j = i; j < n; ++j) {
+                    if (nums[j] > nums[i - 1]) {
+                        int temp = nums[i - 1];
+                        nums[i - 1] = nums[j];
+                        nums[j] = temp;
+                        return;
+                    }
+                }
+            }
+        }
+        Arrays.sort(nums);
+        return;
+    }
+
+    //459 重复的字符串
+    public boolean repeatedSubstringPattern(String s) {
+        String str = s + s;
+        return str.substring(1, str.length() - 1).contains(s);
+    }
+
+    //3.无重复字符的最长子串
+    public int lengthOfLongestSubstring(String s) {
+        if (s == null) return 0;
+        Set<Character> set = new HashSet<>();
+        int n = s.length();
+        int right = -1;
+        int ans = 0;
+        for (int left = 0; left < n; ++left) {
+            if (left != 0)
+                set.remove(s.charAt(left - 1));
+            while (right + 1 < n && !set.contains(s.charAt(right + 1))) {
+                set.add(s.charAt(right + 1));
+                ++right;
+            }
+            ans = Math.max(ans, right - left + 1);
+        }
+        return ans;
+    }
+
+    //208实现前缀树Trie
+    class TrieNode {
+
+        private TrieNode[] links;
+
+        private final int R = 26;
+
+        private boolean isEnd;
+
+        public TrieNode() {
+            links = new TrieNode[R];
+        }
+
+        public boolean containsKey(char ch) {
+            return links[ch - 'a'] != null;
+        }
+
+        public TrieNode get(char ch) {
+            return links[ch - 'a'];
+        }
+
+        public void put(char ch, TrieNode node) {
+            links[ch - 'a'] = node;
+        }
+
+        public void setEnd() {
+            isEnd = true;
+        }
+
+        public boolean isEnd() {
+            return isEnd;
+        }
+    }
+
+    class Trie {
+        private TrieNode root;
+
+        public Trie() {
+            root = new TrieNode();
+        }
+
+        //插入键到树中
+        public void insert(String word) {
+            TrieNode node = root;
+            for (int i = 0; i < word.length(); ++i) {
+                char currentChar = word.charAt(i);
+                if (!node.containsKey(currentChar)) {
+                    node.put(currentChar, new TrieNode());
+                }
+                node = node.get(currentChar);
+            }
+            node.setEnd();
+        }
+
+        //查找键
+        private TrieNode searchPrefix(String word) {
+            TrieNode node = root;
+            for (int i = 0; i < word.length(); ++i) {
+                char currentChar = word.charAt(i);
+                if (node.containsKey(currentChar)) {
+                    node = node.get(currentChar);
+                } else {
+                    return null;
+                }
+            }
+            return node;
+        }
+
+        // Returns if the word is in the trie.
+        public boolean search(String word) {
+            TrieNode node = searchPrefix(word);
+            return node != null && node.isEnd();
+        }
+
+        //查找键前缀
+        public boolean startsWith(String prefix) {
+            TrieNode node = searchPrefix(prefix);
+            return node != null;
+        }
+
+    }
+
+    /**
+     * Your Trie object will be instantiated and called as such:
+     * Trie obj = new Trie();
+     * obj.insert(word);
+     * boolean param_2 = obj.search(word);
+     * boolean param_3 = obj.startsWith(prefix);
+     */
+
+    //微软
+    public static int solution1(int N) {
+        int[] arr = new int[10];
+        String s = Integer.toString(N);
+
+        for (char c : s.toCharArray()) {
+            arr[c - '0']++;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 9; i >= 0; i--) {
+            for (int j = 0; j < arr[i]; j++) {
+                sb.append((char) ('0' + i));
+            }
+        }
+        BigInteger res = new BigInteger(sb.toString());
+        if (res.compareTo(new BigInteger("100000000")) >= 0) {
+            return -1;
+        } else {
+            return res.intValue();
+        }
+    }
+
+    //大数操作
+    public void Bignumber() {
+        String s = "1837519383";
+        BigInteger b1 = new BigInteger(s);
+
+    }
+
+    //887 丢鸡蛋 递归
+    Map<Integer, Integer> memo = new HashMap<Integer, Integer>();
+
+    public int superEggDrop(int k, int n) {
+        return dp(k, n);
+    }
+
+    public int dp(int k, int n) {
+        if (!memo.containsKey(n * 100 + k)) {
+            int ans;
+            if (n == 0)
+                ans = 0;
+            else if (k == 1)
+                ans = n;
+            else {
+                int low = 1, high = n;
+                while (low + 1 < high) {
+                    int x = (low + high) / 2;
+                    int t1 = dp(k - 1, x - 1);
+                    int t2 = dp(k, n - x);
+
+                    if (t1 < t2) low = x;
+                    else if (t1 > t2) high = x;
+                    else low = high = x;
+                }
+                ans = 1 + Math.min(Math.max(dp(k - 1, low - 1), dp(k, n - low)), Math.max(dp(k - 1, high - 1), dp(k, n - high)));
+            }
+            memo.put(n * 100 + k, ans);
+        }
+        return memo.get(n * 100 + k);
+    }
+
+    //887 丢鸡蛋 状态表
+    public int superEggDrop1(int K, int N) {
+        // dp[i][j]：一共有 i 层楼梯的情况下，使用 j 个鸡蛋的最少仍的次数
+        int[][] dp = new int[N + 1][K + 1];
+
+        // 初始化
+        for (int i = 0; i <= N; i++) {
+            Arrays.fill(dp[i], i);
+        }
+        for (int j = 0; j <= K; j++) {
+            dp[0][j] = 0;
+        }
+
+        dp[1][0] = 0;
+        for (int j = 1; j <= K; j++) {
+            dp[1][j] = 1;
+        }
+        for (int i = 0; i <= N; i++) {
+            dp[i][0] = 0;
+            dp[i][1] = i;
+        }
+
+        // 开始递推
+        for (int i = 2; i <= N; i++) {
+            for (int j = 2; j <= K; j++) {
+                // 在区间 [1, i] 里确定一个最优值
+                int left = 1;
+                int right = i;
+                while (left < right) {
+                    // 找 dp[k - 1][j - 1] <= dp[i - mid][j] 的最大值 k
+                    int mid = left + (right - left + 1) / 2;
+
+                    int breakCount = dp[mid - 1][j - 1];
+                    int notBreakCount = dp[i - mid][j];
+                    if (breakCount > notBreakCount) {
+                        // 排除法（减治思想）写对二分见第 35 题，先想什么时候不是解
+                        // 严格大于的时候一定不是解，此时 mid 一定不是解
+                        // 下一轮搜索区间是 [left, mid - 1]
+                        right = mid - 1;
+                    } else {
+                        // 这个区间一定是上一个区间的反面，即 [mid, right]
+                        // 注意这个时候取中间数要上取整，int mid = left + (right - left + 1) / 2;
+                        left = mid;
+                    }
+                }
+                // left 这个下标就是最优的 k 值，把它代入转移方程 Math.max(dp[k - 1][j - 1], dp[i - k][j]) + 1) 即可
+                dp[i][j] = Math.max(dp[left - 1][j - 1], dp[i - left][j]) + 1;
+            }
+        }
+        return dp[N][K];
+    }
+
+    //141 环形链表
+    public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null) return false;
+        ListNode first = head.next;
+        ListNode second = head;
+
+        while (first != second) {
+            if (first == null || first.next == null)
+                return false;
+            first = first.next.next;
+            second = second.next;
+        }
+        return true;
+    }
+
+    //169多数元素
+    public int majorityElement(int[] nums) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : nums)
+            if (!map.containsKey(num))
+                map.put(num, 1);
+            else
+                map.put(num, map.get(num) + 1);
+
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            if (entry.getValue() > nums.length / 2)
+                return entry.getKey();
+        }
+        return 0;
+    }
+
+    //217存在重复元素
+    public boolean containsDuplicate(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            if (set.contains(num)) return true;
+            else set.add(num);
+        }
+        return false;
+    }
+
+    //235二叉树的最近公共祖先 一次便利
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        TreeNode ancestor = root;
+        while (true) {
+            if (p.val < ancestor.val && q.val < ancestor.val)
+                ancestor = ancestor.left;
+            else if (p.val > ancestor.val && q.val > ancestor.val)
+                ancestor = ancestor.right;
+            else break;
+        }
+        return ancestor;
+    }
+
+    //61 旋转链表
+    public ListNode rotateRight(ListNode head, int k) {
+        if (head == null) return null;
+        if (head.next == null) return head;
+
+        ListNode old_tail = head;
+        int n;
+        for (n = 1; old_tail.next != null; n++)
+            old_tail = old_tail.next;
+        old_tail.next = head;
+
+        ListNode new_tail = head;
+        for (int i = 0; i < n - k % n - 1; i++)
+            new_tail = new_tail.next;
+        ListNode new_head = new_tail.next;
+        new_tail.next = null;
+
+        return new_head;
+    }
+
+    //62 不同路径
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; i++)
+            dp[i][0] = 1;
+        for (int i = 0; i < n; i++)
+            dp[0][i] = 1;
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++)
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+        }
+        return dp[m][n];
+    }
+
+    //142环形链表
+    public ListNode detectCycle(ListNode head) {
+        if (head == null) return null;
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while (fast != null) {
+            if (fast.next != null)
+                fast = fast.next.next;
+            else return null;
+            slow = slow.next;
+
+            if (fast == slow) {
+                ListNode ptr = head;
+                while (ptr != slow) {
+                    ptr = ptr.next;
+                    slow = slow.next;
+                }
+                return ptr;
+            }
+        }
+        return null;
+    }
+
+    //237 nt题目
+
+    //231 2的幂
+    public boolean isPowerOfTwo(int n) {
+        Set<Double> set = new HashSet<>();
+        for (int i = 0; i < 31; i++) {
+            set.add(Math.pow(2, i));
+            System.out.println(Math.pow(2, i));
+        }
+        if (set.contains((double) n)) return true;
+        else return false;
+    }
+
+    //344 反转字符串
+    public void reverseString(char[] s) {
+        char c;
+        for (int i = 0; i < s.length / 2; i++) {
+            c = s[i];
+            s[i] = s[s.length - i - 1];
+            s[s.length - i - 1] = c;
+        }
+    }
+
+    //541反转字符串2
+    public String reverseStr(String s, int k) {
+        char[] cs = s.toCharArray();
+        int n = s.length();
+        int i = 0;
+        while ((i + 2 * k) < n) {
+            char c;
+            for (int j = 0; j < k / 2; ++j) {
+                c = cs[i + j];
+                cs[i + j] = cs[i + k - j];
+                cs[i + k - j] = c;
+            }
+            i = i + 2 * k;
+        }
+        if (n - i < k) {
+            char c;
+            for (int j = 0; j < (n - i) / 2; ++j) {
+                c = cs[i + j];
+                cs[i + j] = cs[n - j];
+                cs[n - j] = c;
+            }
+        } else {
+            char c;
+            for (int j = 0; j < k / 2; ++j) {
+                c = cs[i + j];
+                cs[i + j] = cs[i + k - j];
+                cs[i + k - j] = c;
+            }
+        }
+        return new String(cs);
+    }
+
+    //557反转字符串中的单词3
+    public String reverseWords(String s) {
+        StringBuilder sb = new StringBuilder();
+        int length = s.length();
+        int i = 0;
+        while (i < length) {
+            int start = i;
+            while (i < length && s.charAt(i) != ' ')
+                i++;
+            for (int p = start; p < i; p++)
+                sb.append(s.charAt(start + i - 1 - p));
+            while (i < length && s.charAt(i) == ' ') {
+                i++;
+                sb.append(' ');
+            }
+        }
+        return sb.toString();
+    }
+
+    //43字符串相乘
+
+    //腾讯一笔 3题
+
+    //148排序链表
+    public ListNode sortList(ListNode head) {
+        if (head == null) return head;
+        int length = 0;
+        ListNode node = head;
+        while (node != null) {
+            length++;
+            node = node.next;
+        }
+        ListNode dummyHead = new ListNode(0, head);
+
+        //subLen每次左移一位（即sublen = sublen*2） PS:位运算对CPU来说效率更高
+        for (int subLength = 1; subLength < length; subLength <<= 1) {
+            ListNode prev = dummyHead, curr = dummyHead.next;
+            while (curr != null) {
+                ListNode head1 = curr;
+                for (int i = 1; i < subLength && curr.next != null; i++)
+                    curr = curr.next;
+                ListNode head2 = curr.next;
+                curr.next = null;
+                curr = head2;
+                for (int i = 1; i < subLength && curr != null && curr.next != null; i++)
+                    curr = curr.next;
+                ListNode next = null;
+                if (curr != null) {
+                    next = curr.next;
+                    curr.next = null;
+                }
+                ListNode merged = merge148(head1, head2);
+                prev.next = merged;
+                while (prev.next != null)
+                    prev = prev.next;
+                curr = next;
+            }
+        }
+        return dummyHead.next;
+
+    }
+
+    public ListNode merge148(ListNode head1, ListNode head2) {
+        ListNode dummyHead = new ListNode(0);
+        ListNode temp = dummyHead, temp1 = head1, temp2 = head2;
+        while (temp1 != null && temp2 != null) {
+
+            if (temp1.val <= temp2.val) {
+                temp.next = temp1;
+                temp1 = temp1.next;
+            } else {
+                temp.next = temp2;
+                temp2 = temp2.next;
+            }
+            temp = temp.next;
+        }
+
+        if (temp1 != null)
+            temp.next = temp1;
+        else if (temp2 != null)
+            temp.next = temp2;
+        return dummyHead.next;
+    }
+
+    //198 打家劫舍
+    public int rob(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        dp[1] = nums[0];
+        for (int i = 2; i <= n; i++)
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
+    }
+
+    //213 抢劫2
+    public int rob2(int[] nums) {
+        int n = nums.length;
+        if (n == 0) return 0;
+        if (n == 1) return nums[0];
+        return Math.max(dp2(Arrays.copyOfRange(nums, 0, n - 1)),
+                dp2(Arrays.copyOfRange(nums, 1, n)));
+    }
+
+    private int dp2(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        dp[1] = nums[0];
+        for (int i = 2; i <= n; i++)
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        return dp[n];
+    }
+
+    //124二叉树中的最大路径和
+    int maxSum = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        maxGain(root);
+        return maxSum;
+    }
+
+    public int maxGain(TreeNode node) {
+        if (node == null) return 0;
+        int leftGain = Math.max(maxGain(node.left), 0);
+        int rightGain = Math.max(maxGain(node.right), 0);
+
+        int priceNewpath = node.val + leftGain + rightGain;
+
+        maxSum = Math.max(maxSum, priceNewpath);
+
+        return node.val + Math.max(leftGain, rightGain);
+    }
+
+    //78子集
+    List<Integer> t = new ArrayList<Integer>();
+    List<List<Integer>> ans = new ArrayList<>();
+
+    public List<List<Integer>> subsets(int[] nums) {
+        dfs3(0, nums);
+        return ans;
+    }
+
+    public void dfs3(int cur, int[] nums) {
+        if (cur == nums.length) {
+            ans.add(new ArrayList<Integer>(t));
+            return;
+        }
+        t.add(nums[cur]);
+        dfs3(cur + 1, nums);
+        t.remove(t.size() - 1);
+        dfs3(cur + 1, nums);
+    }
+
+    //167 两数之和 II - 输入有序数组
+    public int[] twoSum2(int[] numbers, int target) {
+        int n = numbers.length;
+        int left = 0, right = n - 1;
+        int[] ans = new int[2];
+
+        while (left != right) {
+            if (numbers[left] + numbers[right] == target)
+                return new int[]{left + 1, right + 1};
+            else if (numbers[left] + numbers[right] > target)
+                right--;
+            else if (numbers[left] + numbers[right] < target)
+                left++;
+        }
+        return null;
+    }
+
+    //633 平方数之和
+    public boolean judgeSquareSum(int c) {
+        if (c <= 2) return true;
+        int left = 0, right = (int) Math.sqrt((double) c);
+        while (left != right) {
+            if (left * left + right * right == c)
+                return true;
+            else if (left * left + right * right > c)
+                right--;
+            else if (left * left + right * right < c)
+                left++;
+        }
+        return false;
+    }
+
+    //345 反转字符串中的元音字母
+    public String reverseVowels(String s) {
+        char[] c = s.toCharArray();
+        int n = s.length();
+        int left = 0, right = n - 1;
+        while (left < right) {
+            while (left < n && !isVowel(c[left]))
+                left++;
+            while (right >= 0 && !isVowel(c[right]))
+                right--;
+            if (left >= right) break;
+            char temp = c[left];
+            c[left] = c[right];
+            c[right] = temp;
+            left++;
+            right--;
+        }
+        return new String(c);
+    }
+
+    private boolean isVowel(char ch) {
+        return ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u'
+                || ch == 'A' || ch == 'E' || ch == 'I' || ch == 'O' || ch == 'U';
+    }
 }
